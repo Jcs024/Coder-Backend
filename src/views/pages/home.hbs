@@ -1,0 +1,17 @@
+<h2>🛍️ Todos Nuestros Productos</h2>
+
+<div class="products-container">
+    {{#each products}}
+    <div class="product-card">
+        <h3>{{this.title}}</h3>
+        <p>📝 {{this.description}}</p>
+        <p>💰 Precio: ${{this.price}}</p>
+        <p>📦 Stock: {{this.stock}} unidades</p>
+        <p>🔖 Código: {{this.code}}</p>
+        <p>🏷️ Categoría: {{this.category}}</p>
+        <p>🟢 Estado: {{#if this.status}}Activo{{else}}Inactivo{{/if}}</p>
+    </div>
+    {{else}}
+    <p>😴 No hay productos disponibles. Visita la sección de <a href="/realtimeproducts">Productos en Tiempo Real</a> para agregar algunos.</p>
+    {{/each}}
+</div>

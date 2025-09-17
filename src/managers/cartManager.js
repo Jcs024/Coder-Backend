@@ -24,6 +24,7 @@ class CartManager {
     return [];
   }
 }
+
   async #writeFile(carts) {
     try {
       await fs.writeFile(this.cartPath, JSON.stringify(carts, null, 2));
@@ -50,6 +51,16 @@ class CartManager {
     }
   }
 
+  async getAllCarts() {
+    try {
+      const carts = await this.#readFile();
+      return carts;
+    } catch (error) {
+      console.error("Error obteniendo carritos:", error.message);
+      return [];
+    }
+  }
+  
   async getCartById(id) {
     try {
       const carts = await this.#readFile();

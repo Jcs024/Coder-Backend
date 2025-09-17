@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Mi E-Commerce</title>
+    <link rel="stylesheet" href="/public/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <nav>
+        <h1>🛒 Mi E-Commerce</h1>
+        <ul>
+            <li><a href="/">🏠 Home</a></li>
+            <li><a href="/realtimeproducts">⚡ Productos en Tiempo Real</a></li>
+            <li><a href="/api/products">📋 API Productos</a></li>
+            <li><a href="/api/carts">🛒 API Carritos</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        {{{body}}}
+    </main>
+
+    {{#if useSocket}}
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{/if}}
+</body>
+</html>

@@ -31,7 +31,6 @@ async addProduct({ title, description, price, thumbnail, code, stock, status = t
     const products = await this.#readFile();
     console.log("Productos leídos:", products);
 
-    // VALIDACIÓN MEJORADA
     const requiredFields = { title, description, price, code, stock, category };
     for (const [field, value] of Object.entries(requiredFields)) {
       if (value === undefined || value === null || value === "") {
@@ -39,12 +38,10 @@ async addProduct({ title, description, price, thumbnail, code, stock, status = t
       }
     }
 
-    // Validar que price y stock sean números
     if (typeof price !== 'number' || typeof stock !== 'number') {
       throw new Error("Price y stock deben ser números");
     }
 
-    // Resto del código igual...
     if (products.some((p) => p.code === code)) {
       throw new Error(`Ya existe un producto con el código ${code}`);
     }

@@ -1,13 +1,1 @@
-[
-  {
-    "id": 1,
-    "title": "GTA V",
-    "description": "Juego de mundo abierto",
-    "price": 65,
-    "thumbnail": null,
-    "code": "GTA001",
-    "stock": 5,
-    "status": true,
-    "category": "videojuegos"
-  }
-]
+[]
