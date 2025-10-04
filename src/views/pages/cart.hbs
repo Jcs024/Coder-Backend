@@ -1,0 +1,127 @@
+<div class="container main-content fade-in">
+  <h1 class="page-title">🛒 Mi Carrito</h1>
+
+  {{#if cart.products.length}}
+    <div class="row">
+      <div class="col-md-8">
+        {{#each cart.products}}
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <h5 class="card-title">{{this.product.title}}</h5>
+                  <p class="text-muted mb-2">{{this.product.category}}</p>
+                  <p class="mb-3"><strong>Precio unitario:</strong> ${{this.product.price}}</p>
+                  
+                  <div class="quantity-controls">
+                    <label class="form-label"><strong>Cantidad:</strong></label>
+                    <div class="d-flex align-items-center gap-2" style="max-width: 150px;">
+                      <button class="btn btn-outline-secondary btn-sm" 
+                              onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}} - 1)">
+                        -
+                      </button>
+                      <span class="quantity-display px-3">{{this.quantity}}</span>
+                      <button class="btn btn-outline-secondary btn-sm" 
+                              onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}} + 1)">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-4 text-end">
+                  <h5 class="product-price">${{multiply this.product.price this.quantity}}</h5>
+                  <button class="btn btn-danger btn-sm mt-2" 
+                          onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">
+                    🗑️ Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card cart-summary">
+          <div class="card-body">
+            <h4>Resumen del Pedido</h4>
+            <hr>
+            <p><strong>Total productos:</strong> {{cart.products.length}}</p>
+            <p><strong>Subtotal:</strong> ${{calculateTotal cart.products}}</p>
+            <hr>
+            <h3 class="cart-total">Total: ${{calculateTotal cart.products}}</h3>
+            
+            <div class="product-actions">
+              <button class="btn btn-success btn-lg">Finalizar Compra</button>
+              <button class="btn btn-danger" 
+                      onclick="clearCart('{{cart._id}}')">
+                🗑️ Vaciar Carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{else}}
+    <div class="empty-state">
+      <h3>😔 Tu carrito está vacío</h3>
+      <p class="text-muted">Agrega algunos productos para continuar</p>
+      <a href="/products" class="btn btn-primary btn-lg">Ir a Comprar</a>
+    </div>
+  {{/if}}
+</div>
+
+<script>
+async function updateQuantity(cartId, productId, newQuantity) {
+  if (newQuantity < 1) {
+    await removeFromCart(cartId, productId);
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quantity: newQuantity })
+    });
+
+    if (response.ok) {
+      location.reload();
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire('Error', 'No se pudo actualizar la cantidad', 'error');
+  }
+}
+
+async function removeFromCart(cartId, productId) {
+  try {
+    const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      location.reload();
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire('Error', 'No se pudo eliminar el producto', 'error');
+  }
+}
+
+async function clearCart(cartId) {
+  try {
+    const response = await fetch(`/api/carts/${cartId}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      location.reload();
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire('Error', 'No se pudo vaciar el carrito', 'error');
+  }
+}
+</script>

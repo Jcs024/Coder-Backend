@@ -1,30 +1,80 @@
-<!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}} - Mi E-Commerce</title>
-    <link rel="stylesheet" href="/public/css/styles.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-</head>
-<body>
-    <nav>
-        <h1>🛒 Mi E-Commerce</h1>
-        <ul>
-            <li><a href="/">🏠 Home</a></li>
-            <li><a href="/realtimeproducts">⚡ Productos en Tiempo Real</a></li>
-            <li><a href="/api/products">📋 API Productos</a></li>
-            <li><a href="/api/carts">🛒 API Carritos</a></li>
-        </ul>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/public/css/styles.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/">🛒 Mi E-Commerce</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">🏠 Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/products">🛍️ Productos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/realtimeproducts">⚡ Tiempo Real</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="createOrGetCart()">🛒 Mi Carrito</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/api/products">📋 API</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </nav>
-    
-    <main>
-        {{{body}}}
+
+    <main class="container main-content">
+      {{{body}}}
     </main>
 
-    {{#if useSocket}}
-    <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    {{/if}}
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      async function createOrGetCart() {
+        try {
+          Swal.fire({
+            title: 'Cargando carrito...',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+          });
+
+          let cartId = localStorage.getItem('currentCartId');
+          
+          if (!cartId) {
+            const response = await fetch('/api/carts', { method: 'POST' });
+            if (!response.ok) throw new Error('Error creando carrito');
+            
+            const data = await response.json();
+            cartId = data.cart._id;
+            localStorage.setItem('currentCartId', cartId);
+          }
+
+          window.location.href = `/carts/${cartId}`;
+          
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo acceder al carrito: ' + error.message
+          });
+        }
+      }
+    </script>
+  </body>
 </html>

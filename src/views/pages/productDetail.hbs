@@ -1,0 +1,109 @@
+<div class="container main-content fade-in">
+  <a href="/products" class="btn btn-secondary mb-4">« Volver a Productos</a>
+  
+  {{#if product}}
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            {{#if product.thumbnail.length}}
+              <img src="{{product.thumbnail.[0]}}" alt="{{product.title}}" 
+                   class="img-fluid rounded" style="max-height: 400px; width: 100%; object-fit: cover;">
+            {{else}}
+              <div class="empty-image">
+                <span class="text-muted">🖼️ Sin imagen</span>
+              </div>
+            {{/if}}
+          </div>
+          
+          <div class="col-md-6">
+            <h1>{{product.title}}</h1>
+            <p class="text-muted mb-3">{{product.category}}</p>
+            
+            <h2 class="product-price mb-3">${{product.price}}</h2>
+            
+            <div class="product-info mb-4">
+              <p><strong>📦 Stock disponible:</strong> 
+                <span class="{{#if product.stock}}text-success{{else}}text-danger{{/if}}">
+                  {{product.stock}} unidades
+                </span>
+              </p>
+              
+              <div class="mb-4">
+                <h4>Descripción:</h4>
+                <p class="text-muted">{{product.description}}</p>
+              </div>
+
+              <p><strong>🔖 Código:</strong> {{product.code}}</p>
+              <p><strong>🟢 Estado:</strong> {{#if product.status}}Activo{{else}}Inactivo{{/if}}</p>
+            </div>
+            
+            <div class="product-actions">
+              <button onclick="addToCart('{{product._id}}')" 
+                      class="btn btn-success btn-lg" 
+                      {{#unless product.stock}}disabled{{/unless}}>
+                🛒 Agregar al Carrito
+              </button>
+              <a href="/products" class="btn btn-primary">Seguir Comprando</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{else}}
+    <div class="empty-state">
+      <h3>Producto no encontrado</h3>
+      <p class="text-muted">El producto que buscas no existe o fue eliminado.</p>
+      <a href="/products" class="btn btn-secondary">Volver a productos</a>
+    </div>
+  {{/if}}
+</div>
+
+<script>
+async function addToCart(productId) {
+  try {
+    Swal.fire({
+      title: 'Agregando producto...',
+      allowOutsideClick: false,
+      didOpen: () => { Swal.showLoading(); }
+    });
+
+    let cartId = localStorage.getItem('currentCartId');
+    
+    if (!cartId) {
+      const response = await fetch('/api/carts', { method: 'POST' });
+      if (!response.ok) throw new Error('Error creando carrito');
+      
+      const data = await response.json();
+      cartId = data.cart._id;
+      localStorage.setItem('currentCartId', cartId);
+    }
+
+    const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'POST'
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Producto agregado!',
+        text: 'El producto se agregó correctamente al carrito',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      throw new Error(result.error || 'Error al agregar producto');
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'No se pudo agregar el producto al carrito'
+    });
+  }
+}
+</script>

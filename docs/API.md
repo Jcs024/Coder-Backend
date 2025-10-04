@@ -1,378 +1,180 @@
 # 📚 Documentación de la API - E-Commerce
-
-Documentación completa de los endpoints disponibles en la API del e-commerce.
+  API RESTful para gestión de **productos** y **carritos**, con persistencia en **MongoDB Atlas**.
 
 ## 🔗 Base URL
-http://localhost:8080/api
+  http://localhost:8080/api
 
-
-## 📦 Product Endpoints
+## 📦 Productos
 
 ### Obtener todos los productos
+
 **GET** `/products`
 
-**Descripción:** Retorna una lista de todos los productos disponibles en el sistema.
+- Retorna todos los productos.
+- Soporta query params para **paginación, filtro y ordenamiento**:
+  - `?limit=10&page=2`
+  - `?category=videojuegos`
+  - `?sort=price`
 
-**Response:**
-
+**Ejemplo de respuesta:**
 {
   "success": true,
   "count": 2,
-  "products": [
-    {
-      "id": 1,
-      "title": "GTA V",
-      "description": "Juego de mundo abierto",
-      "price": 58,
-      "thumbnail": null,
-      "code": "GTA001",
-      "stock": 10,
-      "status": true,
-      "category": "videojuegos"
-    }
-  ]
+  "products": [...]
 }
-
-**Codigos de estado:**
-
-200 OK - Solicitud exitosa
-
-500 Internal Server Error - Error del servidor
 
 ### Obtener producto por ID
+
 **GET** /products/:pid
 
-**Descripción:** Retorna un producto específico basado en su ID.
+pid: ID de MongoDB del producto.
 
-**Parameters:**
+### Crear producto
 
-pid (number) - ID único del producto
+POST /products
 
-**Response:**
+Body requerido:
 
-{
-  "success": true,
-  "product": {
-    "id": 1,
-    "title": "GTA V",
-    "description": "Juego de mundo abierto",
-    "price": 58,
-    "thumbnail": null,
-    "code": "GTA001",
-    "stock": 10,
-    "status": true,
-    "category": "videojuegos"
-  }
-}
-
-**Códigos de estado:**
-
-200 OK - Producto encontrado
-
-404 Not Found - Producto no existe
-
-500 Internal Server Error - Error del servidor
-
-### Crear nuevo producto
-
-**POST** /products
-
-**Descripción:** Crea un nuevo producto en el sistema.
-
-Body:
 {
   "title": "Producto Nuevo",
-  "description": "Descripción del producto",
+  "description": "Descripción",
   "price": 99.99,
   "code": "UNICO123",
   "stock": 50,
-  "category": "categoria-ejemplo"
+  "category": "ejemplo"
 }
 
-**Campos obligatorios:**
 
-title (string) - Nombre del producto
+Campos opcionales:
 
-description (string) - Descripción detallada
+thumbnail (string, default: null)
 
-price (number) - Precio del producto
+status (boolean, default: true)
 
-code (string) - Código único identificador
-
-stock (number) - Cantidad disponible
-
-category (string) - Categoría del producto
-
-**Campos opcionales:**
-
-thumbnail (string) - URL de imagen (default: null)
-
-status (boolean) - Estado activo/inactivo (default: true)
-
-**Response:**
-
-{
-  "success": true,
-  "message": "Producto creado exitosamente",
-  "product": {
-    "id": 2,
-    "title": "Producto Nuevo",
-    "description": "Descripción del producto",
-    "price": 99.99,
-    "thumbnail": null,
-    "code": "UNICO123",
-    "stock": 50,
-    "status": true,
-    "category": "categoria-ejemplo"
-  }
-}
-
-**Códigos de estado:**
-
-201 Created - Producto creado exitosamente
-
-400 Bad Request - Datos inválidos o faltantes
-
-409 Conflict - Código de producto ya existe
-
-500 Internal Server Error - Error del servidor
 
 ### Actualizar producto
 
-**PUT** /products/:pid
+PUT /products/:pid
 
-**Parameters:**
+Actualiza campos específicos de un producto.
 
-pid - ID del producto a actualizar
-
-Body: (Campos a actualizar)
+Body ejemplo:
 
 {
   "price": 79.99,
   "stock": 30
 }
 
-**Response:**
-{
-  "success": true,
-  "message": "Producto actualizado",
-  "product": {
-    "id": 2,
-    "title": "Producto Nuevo",
-    "description": "Descripción del producto",
-    "price": 79.99,
-    "thumbnail": null,
-    "code": "UNICO123",
-    "stock": 30,
-    "status": true,
-    "category": "categoria-ejemplo"
-  }
-}
-
 ### Eliminar producto
-**DELETE** /products/:pid
 
-**Parameters:**
+DELETE /products/:pid
 
-pid - ID del producto a eliminar
+Elimina un producto por su ID.
 
-**Response:**
-{
-  "success": true,
-  "message": "Producto eliminado",
-  "product": {
-    "id": 2,
-    "title": "Producto Nuevo",
-    "description": "Descripción del producto",
-    "price": 79.99,
-    "thumbnail": null,
-    "code": "UNICO123",
-    "stock": 30,
-    "status": true,
-    "category": "categoria-ejemplo"
-  }
-}
+## 🛒 Carritos
 
-## 🛒 Cart Endpoints
-Obtener todos los carritos
-**GET** /carts
+### Obtener todos los carritos
 
-**Response:**
-
-{
-  "success": true,
-  "count": 2,
-  "carts": [
-    {
-      "id": 1,
-      "products": [
-        {
-          "product": 1,
-          "quantity": 2
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "products": []
-    }
-  ]
-}
+GET /carts
 
 ### Crear nuevo carrito
-**POST** /carts
 
-**Response:**
-
-{
-  "success": true,
-  "message": "Carrito creado exitosamente",
-  "cart": {
-    "id": 3,
-    "products": []
-  }
-}
+POST /carts
 
 ### Obtener carrito por ID
-**GET** /carts/:cid
 
-**Parameters:**
+GET /carts/:cid
 
-cid - ID del carrito
+cid: ID de MongoDB del carrito.
 
-**Response:**
+### Agregar producto a carrito
+
+POST /carts/:cid/product/:pid
+
+cid: ID de carrito.
+
+pid: ID de producto.
+
+Aumenta cantidad si el producto ya existe en el carrito.
+
+### Eliminar producto de carrito
+
+DELETE /carts/:cid/product/:pid
+
+Elimina un producto específico de un carrito.
+
+### Vaciar carrito
+
+DELETE /carts/:cid
+
+Elimina todos los productos del carrito.
+
+## ⚡ WebSockets
+
+Cliente → Servidor:
+
+newProduct: crear producto.
+
+deleteProduct: eliminar producto.
+
+Servidor → Cliente:
+
+updateProducts: lista actualizada.
+
+productSuccess: confirmación.
+
+productError: error.
+
+## 🔍 Códigos de Estado
+
+200 OK – Solicitud exitosa.
+
+201 Created – Recurso creado.
+
+400 Bad Request – Datos inválidos.
+
+404 Not Found – No encontrado.
+
+500 Internal Server Error – Error del servidor.
+
+## 🚨 Manejo de Errores
+
+Formato consistente:
+
 {
-  "success": true,
-  "cart": {
-    "id": 1,
-    "products": [
-      {
-        "product": 1,
-        "quantity": 2
-      }
-    ]
-  }
+  "success": false,
+  "error": "Mensaje descriptivo"
 }
 
-### Agregar producto al carrito
-**POST** /carts/:cid/product/:pid
+## 📊 Validaciones
 
-**Parameters:**
+Productos
 
-cid - ID del carrito
+Campos obligatorios presentes.
 
-pid - ID del producto
+price y stock deben ser números válidos.
 
-**Response:**
-{
-  "success": true,
-  "message": "Producto agregado al carrito",
-  "cart": {
-    "id": 1,
-    "products": [
-      {
-        "product": 1,
-        "quantity": 3
-      }
-    ]
-  }
-}
+code único en la colección.
 
-## 🌐 Web Endpoints
+Carritos
 
-### Página principal
-**GET** /
+ID de carrito y producto deben existir en MongoDB.
 
-### Muestra todos los productos
+No se pueden agregar productos inexistentes.
 
-Interfaz estática
-
-### Productos en tiempo real
-**GET** /realtimeproducts
-
-Interfaz con WebSockets
-
-Agregar/eliminar productos en tiempo real
-
-Notificaciones con SweetAlert2
-
-## ⚡ WebSockets Events
-**Eventos del Cliente**
-newProduct - Crear nuevo producto
-
-deleteProduct - Eliminar producto
-
-**Eventos del Servidor**
-updateProducts - Actualizar lista de productos
-
-productSuccess - Notificación de éxito
-
-productError - Notificación de error
-
-## 🎨 Ejemplos de Uso
-**Ejemplo 1:** Crear producto con cURL
-
+🎨 Ejemplos rápidos con cURL
+# Crear producto
 curl -X POST http://localhost:8080/api/products \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Mouse Gamer",
-    "description": "Mouse RGB 6400DPI",
+    "description": "Mouse RGB",
     "price": 45.99,
     "code": "MGAMER001",
     "stock": 25,
     "category": "perifericos"
   }'
 
-**Ejemplo 2:** Obtener carrito específico
-    curl http://localhost:8080/api/carts/1
+# Obtener carrito por ID
+curl http://localhost:8080/api/carts/652fcc02123abc7890def457
 
-**Ejemplo 3:** Agregar producto al carrito
-    curl -X POST http://localhost:8080/api/carts/1/product/1
-
-
-## 🔍 Códigos de Estado HTTP
-200 OK - Solicitud exitosa
-
-201 Created - Recurso creado exitosamente
-
-400 Bad Request - Datos inválidos
-
-404 Not Found - Recurso no encontrado
-
-500 Internal Server Error - Error del servidor
-
-## 🚨 Manejo de Errores
-Todos los endpoints retornan formato JSON consistente:
-
-**Error Response:**
-
-{
-  "success": false,
-  "error": "Mensaje de error descriptivo"
-}
-
-## 📊 Validaciones
-
-**Productos**
-✅ Todos los campos obligatorios presentes
-
-✅ Precio y stock son números válidos
-
-✅ Código único no duplicado
-
-✅ Stock no negativo
-
-**Carritos**
-✅ ID de carrito válido
-
-✅ ID de producto válido
-
-✅ Producto existe antes de agregar al carrito
-
-## 🔄 Persistencia
-
-Los datos se persisten en archivos JSON:
-
-src/data/products.json - Productos
-
-src/data/carts.json - Carritos

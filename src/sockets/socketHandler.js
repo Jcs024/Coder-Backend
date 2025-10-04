@@ -1,13 +1,10 @@
-const path = require("path");
-const ProductManager = require("../managers/productManager");
+const ProductManager = require("../dao/ProductDAO");
 
-const productPath = path.join(__dirname, "../data/products.json");
-const productManager = new ProductManager(productPath);
+const productManager = new ProductManager();
 
 module.exports = (io) => {
   io.on("connection", async (socket) => {
-    console.log("Cliente conectado");
-    
+
     try {
       const products = await productManager.getProducts();
       socket.emit("updateProducts", products);
@@ -15,11 +12,10 @@ module.exports = (io) => {
       console.error("Error enviando productos:", error);
       socket.emit("updateProducts", []);
     }
-    
+
     socket.on("newProduct", async (productData) => {
       try {
-        console.log("Nuevo producto recibido:", productData);
-        
+
         const newProduct = await productManager.addProduct({
           title: productData.title,
           description: productData.description,
@@ -28,11 +24,10 @@ module.exports = (io) => {
           stock: parseInt(productData.stock),
           category: productData.category,
           status: true,
-          thumbnail: null
+          thumbnail: null,
         });
-        
+
         if (newProduct) {
-          console.log("Producto creado exitosamente:", newProduct);
           const updatedProducts = await productManager.getProducts();
           io.emit("updateProducts", updatedProducts);
           socket.emit("productSuccess", "Producto agregado correctamente");
@@ -44,14 +39,13 @@ module.exports = (io) => {
         socket.emit("productError", error.message);
       }
     });
-    
+
     socket.on("deleteProduct", async (productId) => {
       try {
-        console.log("Eliminando producto ID:", productId);
-        
-        const deleted = await productManager.deleteProduct(parseInt(productId));
+
+        const deleted = await productManager.deleteProduct(productId);
+
         if (deleted) {
-          console.log("Producto eliminado:", deleted);
           const updatedProducts = await productManager.getProducts();
           io.emit("updateProducts", updatedProducts);
           socket.emit("productSuccess", "Producto eliminado correctamente");
@@ -63,9 +57,9 @@ module.exports = (io) => {
         socket.emit("productError", error.message);
       }
     });
-    
+
     socket.on("disconnect", () => {
-      console.log("Cliente desconectado");
+      console.log("Cliente desconectado:", socket.id);
     });
   });
 };

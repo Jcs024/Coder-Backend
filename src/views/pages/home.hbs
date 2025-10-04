@@ -1,17 +1,80 @@
-<h2>🛍️ Todos Nuestros Productos</h2>
+<div class="container main-content fade-in">
+  <h1 class="page-title">🛍️ Todos Nuestros Productos</h1>
 
-<div class="products-container">
+  <div class="products-grid">
     {{#each products}}
     <div class="product-card">
-        <h3>{{this.title}}</h3>
-        <p>📝 {{this.description}}</p>
-        <p>💰 Precio: ${{this.price}}</p>
-        <p>📦 Stock: {{this.stock}} unidades</p>
-        <p>🔖 Código: {{this.code}}</p>
-        <p>🏷️ Categoría: {{this.category}}</p>
-        <p>🟢 Estado: {{#if this.status}}Activo{{else}}Inactivo{{/if}}</p>
+      <h3>{{this.title}}</h3>
+      <p class="product-price">💰 ${{this.price}}</p>
+      <p><strong>📦 Stock:</strong> {{this.stock}} unidades</p>
+      <p><strong>🏷️ Categoría:</strong> {{this.category}}</p>
+      <p><strong>📝 Descripción:</strong> {{this.description}}</p>
+      <p><strong>🔖 Código:</strong> {{this.code}}</p>
+      <p><strong>🟢 Estado:</strong> {{#if this.status}}Activo{{else}}Inactivo{{/if}}</p>
+      
+      <div class="product-actions">
+        <a href="/products/{{this._id}}" class="btn btn-primary">👁️ Ver Detalles</a>
+        <button onclick="addToCart('{{this._id}}')" 
+                class="btn btn-success" 
+                {{#unless this.stock}}disabled{{/unless}}>
+          🛒 Agregar
+        </button>
+      </div>
     </div>
     {{else}}
-    <p>😴 No hay productos disponibles. Visita la sección de <a href="/realtimeproducts">Productos en Tiempo Real</a> para agregar algunos.</p>
+    <div class="empty-state">
+      <h3>😴 No hay productos disponibles</h3>
+      <p class="text-muted">Visita la sección de <a href="/realtimeproducts">Productos en Tiempo Real</a> para agregar algunos.</p>
+    </div>
     {{/each}}
+  </div>
 </div>
+
+<script>
+async function addToCart(productId) {
+  try {
+    Swal.fire({
+      title: 'Agregando producto...',
+      allowOutsideClick: false,
+      didOpen: () => { Swal.showLoading(); }
+    });
+
+    let cartId = localStorage.getItem('currentCartId');
+    
+    if (!cartId) {
+      const response = await fetch('/api/carts', { method: 'POST' });
+      if (!response.ok) throw new Error('Error creando carrito');
+      
+      const data = await response.json();
+      cartId = data.cart._id;
+      localStorage.setItem('currentCartId', cartId);
+    }
+
+    const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'POST'
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Producto agregado!',
+        text: 'El producto se agregó correctamente al carrito',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      throw new Error(result.error || 'Error al agregar producto');
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'No se pudo agregar el producto al carrito'
+    });
+  }
+}
+</script>

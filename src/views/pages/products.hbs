@@ -1,0 +1,144 @@
+<div class="container main-content fade-in">
+  <h1 class="page-title">📦 Nuestros Productos</h1>
+
+  <div class="filters-section">
+    <form action="/products" method="GET" class="filters-grid">
+      <div class="filter-group">
+        <label class="form-label">🔍 Buscar:</label>
+        <input type="text" name="query" value="{{query.query}}" 
+               placeholder="Categoría, nombre..." class="form-control">
+      </div>
+      
+      <div class="filter-group">
+        <label class="form-label">📊 Ordenar por precio:</label>
+        <select name="sort" class="form-select">
+          <option value="">Sin orden</option>
+          <option value="asc" {{#eq query.sort 'asc'}}selected{{/eq}}>Menor a Mayor</option>
+          <option value="desc" {{#eq query.sort 'desc'}}selected{{/eq}}>Mayor a Menor</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="form-label">📄 Productos por página:</label>
+        <select name="limit" class="form-select">
+          <option value="5" {{#eq query.limit '5'}}selected{{/eq}}>5</option>
+          <option value="10" {{#eq query.limit '10'}}selected{{/eq}}>10</option>
+          <option value="20" {{#eq query.limit '20'}}selected{{/eq}}>20</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success">Aplicar Filtros</button>
+    </form>
+  </div>
+
+  {{#if payload.length}}
+    <div class="products-grid">
+      {{#each payload}}
+        <div class="product-card">
+          <h3>{{this.title}}</h3>
+          <p class="product-price">💰 ${{this.price}}</p>
+          <p><strong>📦 Stock:</strong> {{this.stock}} unidades</p>
+          <p><strong>🏷️ Categoría:</strong> {{this.category}}</p>
+          <p><strong>📝 Descripción:</strong> {{this.description}}</p>
+          
+          <div class="product-actions">
+            <a href="/products/{{this._id}}" class="btn btn-primary">👁️ Ver Detalles</a>
+            <button onclick="addToCart('{{this._id}}')" 
+                    class="btn btn-success" 
+                    {{#unless this.stock}}disabled{{/unless}}>
+              🛒 Agregar
+            </button>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+    {{#if totalPages}}
+      <div class="pagination">
+        {{#if hasPrevPage}}
+          <a href="{{prevLink}}" class="page-link">« Anterior</a>
+        {{else}}
+          <span class="page-link disabled">« Anterior</span>
+        {{/if}}
+
+        <span class="page-info">Página {{page}} de {{totalPages}}</span>
+
+        {{#if hasNextPage}}
+          <a href="{{nextLink}}" class="page-link">Siguiente »</a>
+        {{else}}
+          <span class="page-link disabled">Siguiente »</span>
+        {{/if}}
+      </div>
+    {{/if}}
+
+  {{else}}
+    <div class="empty-state">
+      <h3>😔 No se encontraron productos</h3>
+      <p class="text-muted">Intenta con otros filtros de búsqueda</p>
+      <a href="/products" class="btn btn-secondary">Limpiar Filtros</a>
+    </div>
+  {{/if}}
+</div>
+
+<script>
+async function addToCart(productId) {
+  try {
+    Swal.fire({
+      title: 'Agregando producto...',
+      text: 'Por favor espere',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    let cartId = localStorage.getItem('currentCartId');
+    
+    if (!cartId) {
+      const response = await fetch('/api/carts', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error('Error creando carrito');
+      
+      const data = await response.json();
+      cartId = data.cart._id;
+      localStorage.setItem('currentCartId', cartId);
+    }
+
+    const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Producto agregado!',
+        text: 'El producto se agregó correctamente al carrito',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      throw new Error(result.error || 'Error al agregar producto');
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+    
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'No se pudo agregar el producto al carrito',
+      confirmButtonText: 'Entendido'
+    });
+  }
+}
+</script>

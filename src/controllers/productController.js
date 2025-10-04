@@ -3,14 +3,23 @@ class ProductController {
     this.productService = null;
   }
 
-  getProducts = async (req, res) => {
+  getProducts = async (req, res, options = {}) => {
     try {
-      const products = await this.productService.getProducts();
-      res.json(products);
+      const { limit, page, sort, query } = options;
+      const result = await this.productService.getProducts({
+        limit: parseInt(limit),
+        page: parseInt(page),
+        sort,
+        query,
+      });
+      res.json(result);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
     }
-  }
+  };
 
   getProductById = async (req, res) => {
     try {
@@ -23,7 +32,7 @@ class ProductController {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  };
 
   addProduct = async (req, res) => {
     try {
@@ -33,7 +42,7 @@ class ProductController {
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
-  }
+  };
 
   updateProduct = async (req, res) => {
     try {
@@ -47,7 +56,7 @@ class ProductController {
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
-  }
+  };
 
   deleteProduct = async (req, res) => {
     try {
@@ -60,7 +69,7 @@ class ProductController {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  };
 }
 
 module.exports = ProductController;

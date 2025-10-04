@@ -1,8 +1,11 @@
 {
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
     "handlebars": "^4.7.8",
+    "mongoose": "^8.18.3",
+    "mongoose-paginate-v2": "^1.9.1",
     "multer": "^2.0.2",
     "socket.io": "^4.8.1",
     "sweetalert2": "^11.23.0"
@@ -12,8 +15,7 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs": "echo \"Documentación disponible en API.md\""
-  }
-,
+  },
   "name": "back-entrega-1",
   "version": "1.0.0",
   "main": "index.js",

@@ -1,145 +1,113 @@
-# 🛒 E-Commerce API - Backend
+# 🛒 E-Commerce API - Entrega Final
 
-Una API RESTful completa para gestión de productos y carritos de compra, construida con Node.js, Express y Handlebars. Incluye WebSockets para actualizaciones en tiempo real.
+Proyecto académico de un **backend para un e-commerce** desarrollado en **Node.js + Express**, con **MongoDB Atlas** como sistema de persistencia principal.  
+Incluye gestión de **productos** y **carritos**, además de vistas con **Handlebars** y actualizaciones en tiempo real mediante **WebSockets**.
 
-## 🚀 Características
+## 🎯 Objetivos de la Entrega
 
-- ✅ API RESTful para productos y carritos
-- ✅ WebSockets con Socket.io para tiempo real
-- ✅ Motor de plantillas Handlebars
-- ✅ Persistencia en archivos JSON
-- ✅ Validación de datos completa
-- ✅ Interfaz moderna con SweetAlert2
-- ✅ Estilos responsivos y elegantes
+- Uso de **MongoDB Atlas** como base de datos.
+- Definición de todos los **endpoints REST** para productos y carritos.
+- Implementación de **validaciones** en el servidor.
+- Manejo de **errores con respuestas consistentes en JSON**.
+- Incorporación de **WebSockets** para productos en tiempo real.
+- Interfaz con **Handlebars** y notificaciones con **SweetAlert2**.
+
+---
+
+## 🚀 Tecnologías utilizadas
+
+- **Node.js** + **Express** → Servidor y endpoints REST.
+- **MongoDB Atlas** + **Mongoose** → Persistencia de datos.
+- **Handlebars** → Motor de plantillas.
+- **Socket.io** → Comunicación en tiempo real.
+- **Multer** → Subida de archivos.
+- **SweetAlert2** → Notificaciones modernas en el frontend.
+
+---
 
 ## 📦 Estructura del Proyecto
-back-entrega-1/
+
+back-entrega-final/
 ├── src/
 │ ├── controllers/ # Controladores de la API
-│ ├── managers/ # Gestores de datos (JSON)
+│ ├── managers/ # Conexión y consultas a MongoDB
 │ ├── services/ # Lógica de negocio
 │ ├── routes/ # Rutas de la API
 │ ├── sockets/ # Configuración de WebSockets
 │ ├── views/ # Plantillas Handlebars
-│ ├── data/ # Archivos JSON de persistencia
-│ └── config/ # Configuración de la app
+│ ├── config/ # Configuración general
+│ └── utils/ # Utilidades
 ├── public/ # Archivos estáticos (CSS, JS)
 ├── uploads/ # Archivos subidos (imágenes)
-├── index.js # Punto de entrada principal
-└── package.json # Dependencias del proyecto
+├── index.js # Punto de entrada
+├── package.json # Dependencias
+└── README.md # Este archivo
 
-## ⚡ Instalación
+## ⚡ Instalación y Configuración
 
 1. **Clonar el repositorio:**
-
-git clone <tu-repositorio>
-cd back-entrega-1
-
+   git clone <repo>
+   cd back-entrega-final
+   
 2. **Instalar dependencias:**
+   
+  npm install
 
-npm install
+3. **Configurar variables de entorno:**
+  Crear un archivo .env en la raíz del proyecto con:
 
-3. **Iniciar el servidor:**
-# Desarrollo con nodemon
-npm run dev
+PORT=8080
+MONGO_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/<base>
 
-# Producción
-npm start
+4. **Levantar el servidor:**
+    En desarrollo:
+      npm run dev
 
-4. **Abrir en el navegador:**
+    En producción:
+      npm start
 
-http://localhost:8080
+5. **Abrir en el navegador:**
+  http://localhost:8080
 
 
-# 🎯 Uso Rápido
-1. Interfaz Web
-Home: http://localhost:8080 - Lista de productos
+🌐 Endpoints principales
 
-Tiempo Real: http://localhost:8080/realtimeproducts - Gestión en tiempo real
-
-2. API Endpoints
 Productos: http://localhost:8080/api/products
 
 Carritos: http://localhost:8080/api/carts
 
-3. Ejemplos de API
+Vista Home: http://localhost:8080/
 
-# Obtener todos los productos
-curl http://localhost:8080/api/products
+Vista en tiempo real: http://localhost:8080/realtimeproducts
 
-# Crear un nuevo producto
-curl -X POST http://localhost:8080/api/products \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Producto Ejemplo",
-    "description": "Descripción del producto",
-    "price": 99.99,
-    "code": "CODE123",
-    "stock": 50,
-    "category": "ejemplo"
-  }'
+📄 La documentación detallada de la API se encuentra en API.md
 
-# 🛠️ Dependencias Principales
+📊 Ejemplo de Documento en MongoDB
 
-## Production
-express - Framework web
-
-socket.io - WebSockets en tiempo real
-
-express-handlebars - Motor de plantillas
-
-multer - Manejo de archivos subidos
-
-## Development
-nodemon - Reinicio automático en desarrollo
-
-sweetalert2 - Notificaciones elegantes
-
-# Scripts Disponibles
-npm run dev      # Desarrollo con nodemon
-npm start        # Producción
-npm test         # Ejecutar tests (próximamente)
-
-# 🎨 Características de la Interfaz
-Design Moderno: Gradientes y glassmorphism
-
-Responsive: Adaptable a móviles y tablets
-
-Tiempo Real: Actualización instantánea con WebSockets
-
-Notificaciones: SweetAlert2 para mensajes elegantes
-
-Validación: Formularios con validación client-side y server-side
-
-# 🔧 Configuración
-El puerto por defecto es 8080. Puedes modificarlo en:
-
-src/config/config.js - Configuración general
-
-src/app.js - Configuración del servidor
-
-# 📊 Estructura de Datos
-
-## Producto
+Producto
 {
-  "id": 1,
-  "title": "Producto Ejemplo",
-  "description": "Descripción del producto",
-  "price": 99.99,
+  "_id": "652fcbf3123abc7890def456",
+  "title": "Mouse Gamer",
+  "description": "Mouse RGB 6400DPI",
+  "price": 45.99,
   "thumbnail": null,
-  "code": "CODE123",
-  "stock": 50,
+  "code": "MGAMER001",
+  "stock": 25,
   "status": true,
-  "category": "ejemplo"
+  "category": "perifericos"
 }
 
-## Carrito
+Carrito
 {
-  "id": 1,
+  "_id": "652fcc02123abc7890def457",
   "products": [
     {
-      "product": 1,
+      "product": "652fcbf3123abc7890def456",
       "quantity": 2
     }
   ]
 }
+
+## 🛠️ Scripts disponibles
+npm run dev   # Inicia en modo desarrollo con nodemon
+npm start     # Inicia en modo producción
